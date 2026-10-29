@@ -22,7 +22,7 @@ Every rule here came out of a conversation with the people who own the data (Par
 - Two accounts, two jobs:
   - *Partner Alerts* account: Active Partner list, SMS list, Pending Cancellation, Gifted, Canceled/Paused. Fed in real time for additions and nightly for removals.
   - *Newsletter* account: Active Partner list and Active Newsletter list. Partners are added to both; paused and cancelled come off the partner list only, never the newsletter.
-- A new partner appears on the alerts list **immediately**. Overnight was tried first and Partner Relations found it too slow for welcome texts.
+- A new partner appears on the alerts list **immediately**, not in the overnight batch.
 - SMS consent that Constant Contact shows as "pending" means the partner never answered the confirmation text. Only the partner can resolve it; the API cannot promote pending to explicit consent, so the sync leaves it alone.
 
 ## Texting
@@ -33,9 +33,13 @@ Every rule here came out of a conversation with the people who own the data (Par
 ## Welcome sequence
 
 - Brand-new partners and partners returning after six or more months away enter the welcome workflow.
-- Routine renewals do not. Re-sending a welcome to a ten-year partner was the first complaint the system generated.
+- Routine renewals do not.
+
+## Why removal is automated
+
+Before the sync, there was no reliable process for taking cancelled partners off the email lists, and some former partners kept receiving mail and asked to stop all contact. Removal is now automatic, and Partner Relations gets an email so a person always knows what changed.
 
 ## Change control
 
-- The automation proposes; a person approves. Nightly emails to Partner Relations list every change made, so a wrong rule is caught the next morning, not the next quarter.
+- Partner Relations receives plain-language emails for new partners, address changes, and the nightly list counts, so a wrong rule is noticed quickly.
 - Policy changes (what counts as active, who gets which list) are decisions for the staff who own the relationship, presented as options with trade-offs. The engineer's job is to implement the choice, not make it.

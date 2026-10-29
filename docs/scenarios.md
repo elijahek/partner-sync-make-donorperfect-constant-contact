@@ -6,18 +6,17 @@ Nine Make scenarios. Names below are descriptive; the live account uses short le
 
 ### Status sync
 - **Trigger:** WooCommerce Memberships webhook on membership status change.
-- **Steps:** look up the DonorPerfect record by WooCommerce customer email → map membership status to Is-a-Partner + Partner Status → write Membership Type and start/end dates → apply the gifted rule (a gifted membership sets Partner Status = Gifted and never touches billing fields) → call *Checkout answers* for the same customer.
-- **Idempotent:** re-running on the same event produces no change.
+- **Steps:** look up the DonorPerfect record by WooCommerce customer email → map membership status to Is-a-Partner + Partner Status → write Membership Type and start/end dates → apply the gifted-partnership rule → call *Checkout answers* for the same customer.
+- Safe to re-run: the nightly catch-up re-posts recent events through this scenario.
 
 ### New partner
 - **Trigger:** WooCommerce Memberships webhook on membership created.
 - **Steps:** find-or-create DonorPerfect donor → fill title and phone if empty → write checkout answers → add contact to the Partner Alerts list (and the SMS list if opted in) → email Partner Relations a one-paragraph summary.
-- **Why separate from Status sync:** creation needs the full checkout payload; status changes do not.
 
 ### Contact changes
 - **Trigger:** WooCommerce `customer.updated` webhook.
 - **Steps:** compare incoming street + 5-digit ZIP and email to DonorPerfect → if different, update DonorPerfect and the contact in both Constant Contact accounts → email Partner Relations what changed.
-- **Guard:** ZIP-only changes are flagged in the email rather than written silently; they are usually a typo.
+- The change email shows what changed, so a ZIP-only change (usually a typo) is easy to spot in the morning check.
 
 ### Checkout answers
 - **Trigger:** internal webhook, called by *Status sync* and *Catch-up*.
@@ -31,17 +30,9 @@ Nine Make scenarios. Names below are descriptive; the live account uses short le
 | 12:30 AM | Newsletter lists | Adds active partners to the Newsletter account's Active Partner list and Active Newsletter list; removes paused and cancelled from the partner list only. |
 | 1:15 AM | Full status check | Pulls every active membership from WooCommerce and every Is-a-Partner record from DonorPerfect, diffs, and corrects DonorPerfect toward the website. |
 | 1:45 AM | Partner Alerts lists | Removes lapsed partners from the Active Partner list, maintains Canceled/Paused and Pending Cancellation lists, emails list counts. A count shown as "–" means a list was renamed or deleted and the scenario settings need updating. |
-| 7:00 AM | Count check | Emails DonorPerfect partner count vs. website count. A fixed gap of roughly 30 records is expected (legacy records with no website account); a moving gap is the signal. |
+| 7:00 AM | Count check | Emails DonorPerfect partner count vs. website count. A stable gap is expected (DonorPerfect partners with no matching website account, which Partner Relations is reviewing); a gap that moves is the signal. |
 
-## Error handling
+## Operating constraints
 
-- Every scenario has a single error route that emails the engineer with the module name and the input bundle's customer email (no other PII).
-- Nothing retries automatically against DonorPerfect; a failed write is reported and corrected by the next nightly reconciliation.
-- Constant Contact rate limits are handled with a 2-second sleep between list operations in the nightly scenarios.
-
-## Credit budget
-
-Make operations are the real constraint. Changes made to stay inside the plan:
-- Catch-up window reduced from 7 days to 26 hours.
-- Full status check limited to active memberships rather than all customers.
-- Reconciliation emails replaced per-record emails.
+- Errors and warnings are reviewed each weekday morning in Make's execution history (see the runbook).
+- Make operations are the binding constraint, so new checks run as nightly batches unless they need to be real-time, and temporary diagnostic scenarios are deleted after use.

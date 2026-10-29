@@ -1,12 +1,12 @@
 # Field mapping
 
-How data moves between the three systems. Field codes for DonorPerfect user-defined fields are shown generically; the live codes are account-specific.
+How data moves between the three systems. Field names below are descriptive; the live DonorPerfect field codes are account-specific.
 
 ## WooCommerce → DonorPerfect
 
 | WooCommerce | DonorPerfect | Rule |
 |---|---|---|
-| Customer email | Email (match key) | Match on primary email first; fall back to first + last + ZIP. |
+| Customer email | Email (match key) | Primary email. |
 | Billing first / last name | First Name / Last Name | Fill if empty. |
 | Billing address, city, state, ZIP | Address block | Update when street + 5-digit ZIP differ. |
 | Billing phone | Home/Mobile Phone | Fill if empty. |
@@ -19,7 +19,7 @@ How data moves between the three systems. Field codes for DonorPerfect user-defi
 | Membership status | UDF: Is a Partner (Y/N) | active, pending-cancellation → Y; paused, expired, cancelled → N. |
 | Membership status | UDF: Partner Status | active → Active; pending-cancellation → Pending Cancellation; paused → Paused; expired/cancelled → Expired; gifted plan → Gifted. |
 | Membership plan | UDF: Membership Type | Plan name. |
-| Membership start / end | UDF: Partner Since / Partner Until | Start fills once; end updates on every renewal. |
+| Membership dates | Membership date fields | Written with each status change. |
 
 ## DonorPerfect → Constant Contact (Partner Alerts account)
 
@@ -27,7 +27,7 @@ How data moves between the three systems. Field codes for DonorPerfect user-defi
 |---|---|
 | Is a Partner = Y | Add to Active Partner list |
 | Is a Partner = N | Remove from Active Partner list |
-| Text Opt-In = Y and SMS consent not "pending" | Add to SMS list |
+| Text Opt-In = Y | Add to SMS list |
 | Partner Status = Pending Cancellation | Add to Pending Cancellation list |
 | Partner Status = Gifted | Add to Gifted list |
 | Partner Status = Paused or Expired | Add to Canceled/Paused list; remove from Active |
@@ -44,5 +44,5 @@ Primary email only; no secondary emails are written to either account.
 ## Known data quirks
 
 - Many legacy DonorPerfect records carry one spouse's name with the other spouse's email. Matching on email alone attaches website activity to the record with that email, which is usually correct for list purposes but wrong for salutations. Open item for Partner Relations.
-- Partner Status values in DonorPerfect had inconsistent capitalization from years of manual entry. The sync writes canonical values; a one-time cleanup normalized the rest.
-- A fixed gap of around 30 partners exists between DonorPerfect and the website: offline payers from before the website existed. They are legitimately partners and are excluded from the drift alert.
+- Partner Status values in DonorPerfect have inconsistent capitalization from years of manual entry. The sync writes consistent values; cleanup of older records is a pending task.
+- A stable gap exists between DonorPerfect's partner count and the website's. Partner Relations is reviewing the DonorPerfect partners with no website match.

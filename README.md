@@ -10,8 +10,8 @@ Partners sign up and renew on a WordPress / WooCommerce site. Donor records live
 
 - New partners were added to DonorPerfect and the email lists by hand from order emails.
 - Cancellations were not reliably removed from email lists, so some former partners kept getting mail and asked to stop all contact.
-- Address changes made on the website never reached the CRM.
-- Checkout answers (text-alert opt-in, how they heard about us, spouse name) sat in order emails and were copied in later, or not at all.
+- Address changes made on the website didn't flow to the CRM automatically.
+- Checkout answers (text-alert opt-in, how they heard about us, spouse name) arrived in order emails and had to be copied in by hand.
 
 ## The design in one line
 
@@ -64,7 +64,7 @@ These were decided with the staff who own the data, not by me alone. See [docs/d
 
 ## Python helpers
 
-`tools/` holds small clients I use for checks and one-off fixes outside Make:
+`tools/` holds small Python helpers that mirror the sync's checks outside Make, for spot checks and one-off fixes:
 
 - `dp_client.py`: DonorPerfect XML API wrapper (query, find by email, save donor, set a flag).
 - `cc_lists.py`: Constant Contact v3 helpers that add and remove list memberships without ever changing subscription status.
@@ -73,11 +73,11 @@ These were decided with the staff who own the data, not by me alone. See [docs/d
 
 Run `pytest` for the unit tests (API calls are mocked).
 
-## What I'd do differently
+## Design notes
 
-- Start with the reconciliation jobs, not the real-time ones. The nightly checks found the data problems that shaped every rule above.
-- Compare addresses on street + ZIP from day one. The first version flagged every "St." vs "Street" as a change.
-- Budget Make operations early. Nine scenarios with nightly full scans use credits fast; the catch-up window was tuned down from 7 days to 26 hours.
+- Real-time scenarios handle the common case; nightly reconciliation catches anything a webhook missed. Neither is trusted alone.
+- Addresses are compared on street + 5-digit ZIP only, so formatting differences don't register as changes.
+- Make operations are the binding constraint. The plan runs close to its limit, so checks are batched nightly where real-time isn't needed.
 
 ## Not in this repo
 

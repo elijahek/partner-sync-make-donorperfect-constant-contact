@@ -1,5 +1,7 @@
 # Partner sync: WooCommerce → DonorPerfect → Constant Contact
 
+[![tests](https://github.com/elijahek/partner-sync-make-donorperfect-constant-contact/actions/workflows/tests.yml/badge.svg)](https://github.com/elijahek/partner-sync-make-donorperfect-constant-contact/actions/workflows/tests.yml)
+
 A production integration that keeps a nonprofit's partner (member) records consistent across three systems without anyone re-keying data. Built in Make with nine scenarios, DonorPerfect's XML API, Constant Contact's v3 API, and WooCommerce Memberships webhooks.
 
 **Status:** live since October 2026. The staff member who used to maintain the email lists by hand is observing the sync for a month before her manual lists are retired.
@@ -71,7 +73,7 @@ These were decided with the staff who own the data, not by me alone. See [docs/d
 - `woo_memberships.py`: reads active memberships from the WooCommerce REST API.
 - `reconcile.py`: produces the same website-vs-CRM gap report the morning scenario emails.
 
-Run `pytest` for the unit tests (API calls are mocked).
+Run `pip install -r requirements.txt && python -m pytest` for the unit tests (API calls are mocked). They also run on every push via GitHub Actions.
 
 ## Design notes
 

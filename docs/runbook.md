@@ -2,7 +2,7 @@
 
 ## Weekday morning check (10 minutes)
 
-1. **Make:** open the scenario list. Any scenario switched off, or any errors or warnings in the last 24 hours, gets looked at first. An error email names the module and the customer email.
+1. **Make:** open the scenario list. Any scenario switched off, or any errors or warnings in the last 24 hours, gets looked at first.
 2. **Nightly emails** (all sent from the automation mailbox):
    - *Partner sync check*: DonorPerfect count vs. website count. Compare the gap to the usual baseline. A gap that moved by more than a handful of records since yesterday means a webhook or a nightly job failed.
    - *Partner Alerts lists – nightly check*: list counts. A count of "–" means a list was renamed or deleted in Constant Contact; update the list names in the scenario settings.
@@ -20,7 +20,6 @@
 
 - Edit the existing scenario in place. Do not clone from a blueprint export; exports can embed connection details.
 - Change one module, run once with a known test customer, read the execution log, then turn the scheduler back on.
-- Structural changes to the real-time scenarios (new modules, new routes) are made outside business hours with the catch-up job ready to backfill.
 
 ## Reading Constant Contact data when the UI isn't enough
 
@@ -29,7 +28,6 @@ The Partner Alerts account is reachable only through Make. For a one-off read, b
 ## WooCommerce side
 
 - The checkout text opt-in plugin logs under WooCommerce → Status → Logs. Scheduled Actions may sit pending until wp-admin is loaded; use the Run link if a batch is late.
-- Webhook payloads can be replayed from WooCommerce → Status → Webhook logs when a delivery failed.
 
 ## When DonorPerfect is wrong and the website is right
 
